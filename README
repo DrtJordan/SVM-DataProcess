@@ -1,0 +1,2 @@
+@author：Victor
+这是SVM的数据预处理程序，包括计算Mutual Information， CHI,IG等，最后得出文本用特征向量表示的结果。

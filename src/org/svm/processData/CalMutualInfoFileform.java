@@ -15,9 +15,6 @@ import java.util.LinkedHashMap;
 import java.util.Map;
 import java.util.Map.Entry;
 
-import javax.naming.spi.DirectoryManager;
-
-import org.ictclas4j.utility.ExcludeStopWords;
 import org.svm.utility.Utility;
 
 public class CalMutualInfoFileform {
@@ -33,8 +30,11 @@ public class CalMutualInfoFileform {
  */
 	public static void main(String args[]){
 		CalMutualInfoFileform mi=new CalMutualInfoFileform();
+		mi.getWordSegmentToText("D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\test");
 //		mi.work("D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced training","svmData\\2class exp");
-		mi.getTopNFromFile("svmData\\2class exp\\termMI.txt","svmData\\2class exp\\miTopN.txt",2000);
+//		mi.getTopNFromFile("svmData\\2class exp\\termCHI.txt","svmData\\2class exp\\chiTopN.txt",1000);
+//		mi.getTopNFromFile("svmData\\2class exp\\termIG.txt","svmData\\2class exp\\igTopN.txt",1000);
+		//mi.calFSFromFile("svmData\\5-flods", "svmData\\5-flods");
 	}
 	/**
 	 * 思路：把排好序的MI筛除字母开头和数字开头的词组，构成N个词汇。输出到一个文件中可供后面使用。
@@ -78,7 +78,16 @@ public class CalMutualInfoFileform {
 	            }   
 	        }
 	}
-	
+	public void getWordSegmentToText(String DirectorName,String storeDirectory){
+		File directory=new File(DirectorName);
+		for(File classFile:directory.listFiles()){
+			String className=classFile.getName();
+			//go into the text and analysis it.
+			for(File text:classFile.listFiles()){
+				GetTermFreq.getTF(className, text,storeDirectory+File.separator+ "docTerm.txt");
+			}
+		}
+	}
 	public void getTopNFromFile(String infileName,String outfile,int N){
 		BufferedWriter out = null;  
 		BufferedReader reader=null;
@@ -283,7 +292,6 @@ public class CalMutualInfoFileform {
 	    	 }
 	         out = new BufferedWriter(new OutputStreamWriter(   
 	                  new FileOutputStream(file1)));  
-	         int wordCount=0;
 	         for(Map.Entry<String, Double> wordEntry:l){
 	        	 String wordmi="";
 //	        	 wordCount++;
@@ -327,6 +335,7 @@ public class CalMutualInfoFileform {
 			IGMap.put(word, ig);
 		}
 		
+		System.out.println(IGMap.size());
 		//sort it .
 		ArrayList<Map.Entry<String,Double>> l = new ArrayList<Map.Entry<String,Double>>(IGMap.entrySet());
 		Collections.sort(l, new Comparator<Map.Entry<String,Double>>() {   
@@ -348,15 +357,17 @@ public class CalMutualInfoFileform {
 	    	 }
 	         out = new BufferedWriter(new OutputStreamWriter(   
 	                  new FileOutputStream(file1)));  
-	         int wordCount=0;
+	         String wordmi;
+	         
 	         for(Map.Entry<String, Double> wordEntry:l){
-	        	 String wordmi="";
+	        	 
 //			        	 wordCount++;
-	        	 wordmi+=wordEntry.getKey()+" "+wordEntry.getValue().toString()+"\n";//
+	        	 wordmi=wordEntry.getKey()+" "+wordEntry.getValue().toString()+"\n";//
 	        	 out.write(wordmi);   //here may try to check whether it is right.
 //			        	 if(wordCount>=N)
 //			        		 break;
 	         }
+	         out.close();
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }
@@ -467,7 +478,7 @@ public class CalMutualInfoFileform {
 		//get numOfDocEachClass and totalDocNum
 		getStatistic(readDirectory+File.separator+"statistic.txt");
 		
-		calIG(ResultDirectory);
+//		calIG(ResultDirectory);
 		calCHI(ResultDirectory);
 	}
 	/**
@@ -482,6 +493,7 @@ public class CalMutualInfoFileform {
 			//calculate the chi
 			double chi=0.0;
 			int nt=wordDocFreqInCorpus.get(word);
+//			System.out.println("nt:"+nt);
 			for(Entry<String,Integer> wordClass:wordUnderClass.entrySet()){
 				String className=wordClass.getKey();
 				int nc=numOfDocEachClass.get(className);
@@ -491,12 +503,16 @@ public class CalMutualInfoFileform {
 				int C=nc-A;
 				int D=totalDocNum-B-C+A;
 				
-				
+//				System.out.println("A:"+A+"B:"+B+"C:"+C+"D:"+D);
+//				System.out.println("nc:"+nc);
 				double tempCHI=0.0;
 				tempCHI=(double)(totalDocNum*(A*D-C*B)*(A*D-C*B))/(nc*(totalDocNum-nc)*nt*(totalDocNum-nt));
-				tempCHI*=(double)(nc/totalDocNum);
+//				System.out.println("tempCHI"+tempCHI);
+				tempCHI*=(double)(nc)/totalDocNum;
+//				System.out.println("tempCHI"+tempCHI);
 				chi+=tempCHI;
 			}
+//			System.out.println("chi"+chi);
 			chiMap.put(word, chi);
 		}
 		
@@ -521,7 +537,6 @@ public class CalMutualInfoFileform {
 	    	 }
 	         out = new BufferedWriter(new OutputStreamWriter(   
 	                  new FileOutputStream(file1)));  
-	         int wordCount=0;
 	         for(Map.Entry<String, Double> wordEntry:l){
 	        	 String wordmi="";
 //			        	 wordCount++;
@@ -530,6 +545,7 @@ public class CalMutualInfoFileform {
 //			        	 if(wordCount>=N)
 //			        		 break;
 	         }
+	         out.close();
 	    }catch(Exception e){
 	    	e.printStackTrace();
 	    }

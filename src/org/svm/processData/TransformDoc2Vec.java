@@ -21,7 +21,7 @@ public class TransformDoc2Vec {
 //	public HashMap<String,Integer> getFeatureList(String featureFile){
 //		
 //	}
-	public void getDocVecFromText(String wordListFile,String newsDir,String docVecFileString){
+	public void getDocVecFromText(String wordListFile,String newsDir,String docVecFileString,String form){
 		HashMap<String,Integer> wordList=new HashMap<String,Integer>();
 		int FeatureNum=0;
 		
@@ -30,11 +30,9 @@ public class TransformDoc2Vec {
 			String word;
 			BufferedReader reader=new BufferedReader(new FileReader(wordListFile));
 			while((word=reader.readLine())!=null){
-				System.out.println(word);
 				if (word.length()==0)
 					continue;
 				wordList.put(word, FeatureNum);
-				System.out.println(word);
 				FeatureNum++;
 			}
 			reader.close();
@@ -80,11 +78,13 @@ public class TransformDoc2Vec {
 						}
 				
 						//write to docVec.txt
-						String docVec=className+"\t";
-						for(Integer x:docArray){
-							docVec+=x.toString()+"\t";
+						String docVec;
+						if(form=="mySvm"){
+							docVec=mySvmForm(className, docArray);
+						}else{
+							docVec=libsvmForm(className, docArray);
 						}
-						docVec+="\n";
+
 						out.write(docVec);
 			    	}catch(Exception e){
 			    		e.printStackTrace();
@@ -100,9 +100,11 @@ public class TransformDoc2Vec {
 	/**
 	 * 思路：得到topN的mi词汇，并用树的形式表示他们，读入当前的文档的词语表示，
 	 * 抽出N个词对应的分量（先是TF就行），按照顺序排列下来，最后输出到一个文件中。
-	 * 格式如下：C10001  3 4 5 2 3 12 2 前面为类别，后面是依顺序的词频。
+	 * 格式分为“mysvm”和“libsvm”两种
+	 * mysvm如下：C10001  3 4 5 2 3 12 2 前面为类别，后面是依顺序的词频。
+	 * libsvm如下：C10001 3：4 4：4 5：2
 	 */
-	public void getDocVecFromDocTerm(String wordListFile,String docTermFile,String docVecFileString){
+	public void getDocVecFromDocTerm(String wordListFile,String docTermFile,String docVecFileString,String form){
 
 		HashMap<String,Integer> wordList=new HashMap<String,Integer>();
 		int FeatureNum=0;
@@ -145,11 +147,12 @@ public class TransformDoc2Vec {
 				}
 				
 				//write to docVec.txt
-				String docVec=className+"\t";
-				for(Integer x:docArray){
-					docVec+=x.toString()+"\t";
+				String docVec;
+				if(form=="mySvm"){
+					docVec=mySvmForm(className, docArray);
+				}else{
+					docVec=libsvmForm(className, docArray);
 				}
-				docVec+="\n";
 				out.write(docVec);
 			}
 			out.close();
@@ -158,7 +161,24 @@ public class TransformDoc2Vec {
 			e.printStackTrace();
 		}
 	}
-	
+	private String mySvmForm(String className,int[] docArray){
+		String docVec=className+"\t";
+		for(Integer x:docArray){
+			docVec+=x.toString()+"\t";
+		}
+		docVec+="\n";
+		return docVec;
+	}
+	private String libsvmForm(String className,int[] docArray){
+		String docVec=className+" ";
+		for(int i=0;i<docArray.length;i++){
+			if(docArray[i]!=0){
+				docVec+=String.valueOf(i+1)+":"+String.valueOf(docArray[i])+" ";
+			}
+		}
+		docVec+="\n";
+		return docVec;
+	}
 	public void writeToFile(String file){
 		try{
 			BufferedWriter out=null;
@@ -182,8 +202,12 @@ public class TransformDoc2Vec {
 	}
 	public static void main(String[] args){
 		TransformDoc2Vec doc2vec=new TransformDoc2Vec();
-//		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\miTopN.txt", "svmData\\2class exp\\docTerm.txt", "svmData\\2class exp\\Training docVec.txt");//D:\学习\自学\natural language  processing\2014年毕设-用SVM文本分类\data\sougou labs\SogouC.mini.20061127\SogouC.mini\Sample\C000007
-		doc2vec.getDocVecFromText("svmData\\2class exp\\miTopN.txt", "D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\Test docVec.txt");
-//		doc2vec.writeToFile("svmData\\Train docVec Y.txt");
+		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\chiTopN.txt", "svmData\\2class exp\\test\\DocTerm.txt", "svmData\\2class exp\\test\\docVec chi libsvm.txt","libsvm");
+//		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\igTopN.txt", "svmData\\2class exp\\docTerm.txt", "svmData\\2class exp\\Training docVec ig.txt");//D:\学习\自学\natural language  processing\2014年毕设-用SVM文本分类\data\sougou labs\SogouC.mini.20061127\SogouC.mini\Sample\C000007
+
+//		doc2vec.getDocVecFromText("svmData\\2class exp\\chiTopN.txt", "D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\Test docVec chi.txt");
+//		doc2vec.getDocVecFromText("svmData\\2class exp\\igTopN.txt", "D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\Test docVec ig.txt","libsvm");
+
+		//		doc2vec.writeToFile("svmData\\Train docVec Y.txt");
 	}
 }
