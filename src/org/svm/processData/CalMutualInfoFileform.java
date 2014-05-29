@@ -30,11 +30,11 @@ public class CalMutualInfoFileform {
  */
 	public static void main(String args[]){
 		CalMutualInfoFileform mi=new CalMutualInfoFileform();
-		mi.getWordSegmentToText("D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\test");
+		//mi.getWordSegmentToText("D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\Reduced cross validate", "svmData\\5-flods 5 class");
 //		mi.work("D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced training","svmData\\2class exp");
-//		mi.getTopNFromFile("svmData\\2class exp\\termCHI.txt","svmData\\2class exp\\chiTopN.txt",1000);
-//		mi.getTopNFromFile("svmData\\2class exp\\termIG.txt","svmData\\2class exp\\igTopN.txt",1000);
-		//mi.calFSFromFile("svmData\\5-flods", "svmData\\5-flods");
+		mi.getTopNFromFile("svmData\\5-flods 5 class\\termCHI.txt","svmData\\5-flods 5 class\\chiTopN2000.txt",2000);
+		mi.getTopNFromFile("svmData\\5-flods 5 class\\termIG.txt","svmData\\5-flods 5 class\\igTopN2000.txt",2000);
+		//mi.calFSFromFile("svmData\\5-flods 5 class", "svmData\\5-flods 5 class");
 	}
 	/**
 	 * 思路：把排好序的MI筛除字母开头和数字开头的词组，构成N个词汇。输出到一个文件中可供后面使用。
@@ -372,7 +372,25 @@ public class CalMutualInfoFileform {
 	    	e.printStackTrace();
 	    }
 	}
-
+	
+	/**
+	 * 对totalWordList进行整合加起来，就是词语在整个语料上的频率。
+	 * @param path
+	 */
+	
+	private void getWordDocFreq(){
+		wordDocFreqInCorpus=new HashMap<String,Integer>();
+		for(Map.Entry<String,HashMap<String,Integer>> entry: totalWordList.entrySet()){
+			String word=entry.getKey();
+			HashMap<String,Integer> temp=entry.getValue();
+			Integer wordFreq=0;
+			for(Map.Entry<String, Integer> entryInner: temp.entrySet()){
+				wordFreq+=entryInner.getValue();
+			}
+			
+			wordDocFreqInCorpus.put(word, wordFreq);
+		}
+	}
 	/**
 	 * read term df from termDF.txt
 	 * @param path
@@ -470,15 +488,15 @@ public class CalMutualInfoFileform {
 	 */
 	public void calFSFromFile(String readDirectory,String ResultDirectory){
 		//get wordDocFreqInCorpus - DF of term
-		getTotalTermDF(readDirectory+File.separator+"termDF.txt");
+		//getTotalTermDF(readDirectory+File.separator+"termDF.txt");
 		
 		//get totalWordList - that is the word DF on each class
 		getWordDFonPerClass(readDirectory+File.separator+"docTerm.txt");
-		
+		getWordDocFreq();
 		//get numOfDocEachClass and totalDocNum
 		getStatistic(readDirectory+File.separator+"statistic.txt");
 		
-//		calIG(ResultDirectory);
+ 		calIG(ResultDirectory);
 		calCHI(ResultDirectory);
 	}
 	/**

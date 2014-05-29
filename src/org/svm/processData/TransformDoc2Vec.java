@@ -202,8 +202,12 @@ public class TransformDoc2Vec {
 	}
 	public static void main(String[] args){
 		TransformDoc2Vec doc2vec=new TransformDoc2Vec();
-		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\chiTopN.txt", "svmData\\2class exp\\test\\DocTerm.txt", "svmData\\2class exp\\test\\docVec chi libsvm.txt","libsvm");
-//		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\igTopN.txt", "svmData\\2class exp\\docTerm.txt", "svmData\\2class exp\\Training docVec ig.txt");//D:\学习\自学\natural language  processing\2014年毕设-用SVM文本分类\data\sougou labs\SogouC.mini.20061127\SogouC.mini\Sample\C000007
+		doc2vec.getDocVecFromDocTerm("svmData\\5-flods 5 class\\chiTopN2000.txt", "svmData\\5-flods 5 class\\DocTerm.txt", "svmData\\5-flods 5 class\\train data2\\docVec chi libsvm.txt","libsvm");
+		doc2vec.getDocVecFromDocTerm("svmData\\5-flods 5 class\\igTopN2000.txt", "svmData\\5-flods 5 class\\DocTerm.txt", "svmData\\5-flods 5 class\\train data2\\docVec ig libsvm.txt","libsvm");
+		doc2vec.getDocVecFromDocTerm("svmData\\5-flods 5 class\\chiTopN2000.txt", "svmData\\5-flods 5 class\\DocTerm.txt", "svmData\\5-flods 5 class\\train data2\\docVec chi mysvm.txt","mySvm");
+		doc2vec.getDocVecFromDocTerm("svmData\\5-flods 5 class\\igTopN2000.txt", "svmData\\5-flods 5 class\\DocTerm.txt", "svmData\\5-flods 5 class\\train data2\\docVec ig mysvm.txt","mySvm");
+
+		//		doc2vec.getDocVecFromDocTerm("svmData\\2class exp\\igTopN.txt", "svmData\\2class exp\\docTerm.txt", "svmData\\2class exp\\Training docVec ig.txt");//D:\学习\自学\natural language  processing\2014年毕设-用SVM文本分类\data\sougou labs\SogouC.mini.20061127\SogouC.mini\Sample\C000007
 
 //		doc2vec.getDocVecFromText("svmData\\2class exp\\chiTopN.txt", "D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\Test docVec chi.txt");
 //		doc2vec.getDocVecFromText("svmData\\2class exp\\igTopN.txt", "D:\\学习\\自学\\natural language  processing\\2014年毕设-用SVM文本分类\\data\\sougou labs\\2class exp\\Reduced testing", "svmData\\2class exp\\Test docVec ig.txt","libsvm");

@@ -72,7 +72,7 @@ public class ExcludeStopWords {
 	}
 	
 	public static void main(String[] args){
-		ExcludeStopWords.excludeStopWords("吃");
+		System.out.println(ExcludeStopWords.excludeStopWords("一块勤奋地漂亮的一块钱,/打造经济的航空母舰。ABCD.#$% Hello World!\n又一段文本123辆 ！3.0"));
 	}
 
 }
